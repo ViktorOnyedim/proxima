@@ -30,15 +30,17 @@ class Quiz(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
     time_limit = models.DurationField(default=timedelta(minues=30))
-    creator = models.ForeignKey(QuizCreator, on_delete=models.CASCADE)
+    quiz_creator = models.ForeignKey(QuizCreator, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
-    text = models.CharField(max_length=300)
+    text = models.TextField(max_length=300)
     type = models.CharField(choices=QUESTION_TYPE, default="single choice")
     # order = models.IntegerField(default=0)
 
