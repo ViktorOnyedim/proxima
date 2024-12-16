@@ -42,7 +42,19 @@ class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
     text = models.TextField(max_length=300)
     type = models.CharField(choices=QUESTION_TYPE, default="single choice")
-    # order = models.IntegerField(default=0)
+    order = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"Question {self.id}: {self.text}"
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answer")
+    text = models.CharField(max_length=200)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
+
 
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choices")
