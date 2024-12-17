@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 from datetime import timedelta
 
 QUESTION_TYPE = (
-    ("single choice", "single choice")
-    ("multiple choice", "multiple choice"),
-    ("text", "text"),
-    ("boolean", "boolean")
+    ("SC", "single choice"),
+    ("MC", "multiple choice"),
+    ("T", "text"),
+    ("B", "Boolean"),
 )
 
 # Create your models here.
@@ -29,7 +29,7 @@ class QuizCreator(models.Model):
 class Quiz(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
-    time_limit = models.DurationField(default=timedelta(minues=30))
+    time_limit = models.DurationField(default=timedelta(minutes=30))
     quiz_creator = models.ForeignKey(QuizCreator, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     start_time = models.DateTimeField(null=True, blank=True)
@@ -39,16 +39,16 @@ class Quiz(models.Model):
         return self.title
 
 class Question(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
-    text = models.TextField(max_length=300)
-    type = models.CharField(choices=QUESTION_TYPE, default="single choice")
+    text = models.TextField()
+    type = models.CharField(max_length=2, choices=QUESTION_TYPE, default="single choice")
     order = models.PositiveIntegerField()
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
 
     def __str__(self):
         return f"Question {self.id}: {self.text}"
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answer")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
     text = models.CharField(max_length=200)
     is_correct = models.BooleanField(default=False)
 
@@ -59,11 +59,16 @@ class Answer(models.Model):
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choices")
     text = models.CharField(max_length=200)
-    isCorrect = models.BooleanField(default=False)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
 
 class Participant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
-    completed = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)
     
+    def __str__(self):
+        return f"{self.user.username} - {self.quiz.title}"
