@@ -61,21 +61,30 @@ class Choice(models.Model):
 class ParticipantAnswer(models.Model):
     participant = models.ForeignKey('Participant', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
-    choice = models.ForeignKey(Choice, null=True, blank=True, on_delete=models.CASCADE) # for SC/MC/B(boolean)
     text_response = models.CharField(max_length=200) # For text questions
-    is_correct = models.BooleanField(default=False) # track if answer is the correct one
+    # choice = models.ForeignKey(Choice, null=True, blank=True, on_delete=models.CASCADE) # for SC/MC/B(boolean)
+    selected_choices = models.ManyToManyField(Choice, blank=True, related_name='answers') # for SC/MC/B(boolean)
 
-    def save(self, *args, **kwargs):
-        if self.choice:
-            self.is_correct = self.choice.is_correct
-        elif self.text_response:
-            self.is_correct = self.text_response.strip().lower() == self.question.text.strip().lower()
-        super().save(*args, **kwargs)
+    # is_correct = models.BooleanField(default=False) # track if answer is the correct one
+    def is_correct(self):
+        if self.question.type == "T":
+            correct_answers = Choice.objects.filter(question=self.question, is_correct=True)
+            if correct_answers:
+                return self.text_response.lower() == correct_answers.first().text.lower()
+            return False
+        elif self.question.type == "SC" or self.question.type == "MC":
+            correct_choices = set(Choice.objects.filter(question=self.question, is_correct=True))
+            answered_choices = set(self.selected_choices.all())
+            if self.question.type == "SC":
+                return len(answered_choices) == 1 and correct_choices == answered_choices
+            else:
+                return correct_choices == answered_choices
+        return False
 
     def __str__(self):
-        if self.choice:
-            return f"Answer to {self.question.text}: {self.choice.text}"
-        return f"Answer to {self.question.text}: {self.text_response}"
+        if self.text_response:
+            return f"Answer for {self.question.text}: {self.text_response}"
+        return f"Answer for {self.question.text}: {", ".join([choice.text for choice in self.selected_choices.all()])}"
 
 
 class Participant(models.Model):
