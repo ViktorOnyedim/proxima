@@ -24,7 +24,7 @@ class QuizCreator(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.username
+        return f"{self.user.username} at {self.organization.name}"
 
 class Quiz(models.Model):
     title = models.CharField(max_length=200)
@@ -84,7 +84,7 @@ class ParticipantAnswer(models.Model):
     def __str__(self):
         if self.text_response:
             return f"Answer for {self.question.text}: {self.text_response}"
-        return f"Answer for {self.question.text}: {", ".join([choice.text for choice in self.selected_choices.all()])}"
+        return f"Answer for {self.question.text}: {', '.join([choice.text for choice in self.selected_choices.all()])}"
 
 
 class Participant(models.Model):
