@@ -85,13 +85,22 @@ class ParticipantAnswer(models.Model):
         if self.text_response:
             return f"Answer for {self.question.text}: {self.text_response}"
         return f"Answer for {self.question.text}: {', '.join([choice.text for choice in self.selected_choices.all()])}"
-
+    
 
 class Participant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    score = models.IntegerField(default=0)
     is_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.user.username}"
+
+class QuizResult(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    score = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.participant.user.username} scored {self.score} in {self.quiz.title}"
