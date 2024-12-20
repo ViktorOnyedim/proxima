@@ -27,7 +27,7 @@ class QuizSerializer(serializers.ModelSerializer):
 class QuizCreatorSeializer(serializers.ModelSerializer):
     class Meta:
         model = QuizCreator
-        fields = ["user, organization"]
+        fields = "__all__"
 
 
 class QuestionSeializer(serializers.ModelSerializer):
