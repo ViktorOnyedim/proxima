@@ -35,6 +35,10 @@ class Quiz(models.Model):
     start_time = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
 
+    class Meta:
+        verbose_name = "Quiz"
+        verbose_name_plural = "Quizzes"
+
     def __str__(self):
         return self.title
 
