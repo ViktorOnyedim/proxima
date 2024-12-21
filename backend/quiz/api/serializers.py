@@ -24,13 +24,13 @@ class QuizSerializer(serializers.ModelSerializer):
         ]
 
 
-class QuizCreatorSeializer(serializers.ModelSerializer):
+class QuizCreatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuizCreator
         fields = "__all__"
 
 
-class QuestionSeializer(serializers.ModelSerializer):
+class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = "__all__"
