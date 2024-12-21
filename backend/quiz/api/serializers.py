@@ -42,7 +42,7 @@ class ChoiceSeializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ParticipantSeializer(serializers.ModelSerializer):
+class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
         fields = "__all__"
