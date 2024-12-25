@@ -4,9 +4,12 @@ from . import views as api_views
 
 router = routers.DefaultRouter()
 router.register(r"questions", api_views.QuestionViewSet)
+router.register(r"quiz-taking", api_views.QuizTakingViewSet)
 
 app_name = 'quiz'
 urlpatterns = [
+    path("register/", api_views.RegisterView.as_view(), name="auth_register"),
+
     # quizzes
     path("quizzes/", api_views.QuizListView.as_view(), name="quiz_list"),
     path("quizzes/<int:pk>/", api_views.QuizDetailView.as_view(), name="quiz_detail"),
