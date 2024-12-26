@@ -8,11 +8,14 @@ router.register(r"quiz-taking", api_views.QuizTakingViewSet)
 
 app_name = 'quiz'
 urlpatterns = [
+    path("home", api_views.api_root, name="api_root"),
+
     path("register/", api_views.RegisterView.as_view(), name="auth_register"),
 
     # quizzes
-    path("quizzes/", api_views.QuizListView.as_view(), name="quiz_list"),
-    path("quizzes/<int:pk>/", api_views.QuizDetailView.as_view(), name="quiz_detail"),
+    path("quiz/", api_views.QuizListView.as_view(), name="quiz_list"),
+    path("quiz/<int:pk>/", api_views.QuizDetailView.as_view(), name="quiz_detail"),
+    path("quiz/<int:pk>/start/", api_views.StartQuizView.as_view(), name="start_quiz"),
 
     # Questions
     # path("questions/", api_views.QuestionListView.as_view(), name="question_list"),
