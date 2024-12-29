@@ -5,13 +5,22 @@ from quiz import models
 class QuizAdmin(admin.ModelAdmin):
     list_display = ('title', 'is_active')
 
+class ChoiceInlineModel(admin.TabularInline):
+    model = models.Choice
+    fields = ['text', 'is_correct']
+
+class QuestionAdmin(admin.ModelAdmin):
+    fields = ['text', 'type', 'quiz']
+    list_display = ['text', 'type', 'order', 'quiz']
+    inlines = [ChoiceInlineModel]
+
 class ChoiceAdmin(admin.ModelAdmin):
     list_display = ('question', 'is_correct', 'text')
 
 admin.site.register(models.Organization)
 admin.site.register(models.QuizCreator)
 admin.site.register(models.Quiz, QuizAdmin)
-admin.site.register(models.Question)
+admin.site.register(models.Question, QuestionAdmin)
 admin.site.register(models.QuizResult)
 admin.site.register(models.ParticipantAnswer)
 admin.site.register(models.Choice, ChoiceAdmin)
