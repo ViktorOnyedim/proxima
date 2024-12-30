@@ -115,7 +115,8 @@ class QuizSubmissionView(generics.CreateAPIView):
     serializer_class = QuizResultSerializer
 
     def create(self, request, *args, **kwargs):
-        quiz_id = kwargs.get("quiz_id")
+        # Get quiz_id from URL param <int:quiz_id>
+        quiz_id = kwargs.get("quiz_id") 
         try:
             # Get or create participant
             participant, created = Participant.objects.get_or_create(
