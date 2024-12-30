@@ -76,10 +76,10 @@ class ParticipantAnswer(models.Model):
             if correct_answers:
                 return self.text_response.lower() == correct_answers.first().text.lower()
             return False
-        elif self.question.type == "SC" or self.question.type == "MC":
+        elif self.question.type == "SC" or self.question.type == "MC" or self.question.type == "B":
             correct_choices = set(Choice.objects.filter(question=self.question, is_correct=True))
             answered_choices = set(self.selected_choices.all())
-            if self.question.type == "SC":
+            if self.question.type == "SC" or self.question.type == "B":
                 return len(answered_choices) == 1 and correct_choices == answered_choices
             else:
                 return correct_choices == answered_choices
