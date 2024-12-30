@@ -3,24 +3,29 @@ from rest_framework import routers
 from . import views as api_views
 
 router = routers.DefaultRouter()
-router.register(r"questions", api_views.QuestionViewSet)
-router.register(r"quiz-taking", api_views.QuizTakingViewSet)
+# router.register(r"quiz-taking", api_views.QuizTakingViewSet)
 
 app_name = 'quiz'
 urlpatterns = [
+    path("", include(router.urls)),
+
     path("home", api_views.api_root, name="api_root"),
 
-    path("register/", api_views.RegisterView.as_view(), name="auth_register"),
+    # path("register/", api_views.RegisterView.as_view(), name="auth_register"),
+
+    # quiz creator
+    path("quiz-creators/", api_views.QuizCreatorListCreateView.as_view(), name="quiz_creator_list"),
 
     # quizzes
-    path("quiz/", api_views.QuizListView.as_view(), name="quiz_list"),
+    path("quiz/", api_views.QuizListCreateView.as_view(), name="quiz_list"),
     path("quiz/<int:pk>/", api_views.QuizDetailView.as_view(), name="quiz_detail"),
-    path("quiz/<int:pk>/start/", api_views.StartQuizView.as_view(), name="start_quiz"),
+    # path("quiz/<int:pk>/start/", api_views.StartQuizView.as_view(), name="start_quiz"),
+
+
 
     # Questions
-    # path("questions/", api_views.QuestionListView.as_view(), name="question_list"),
-    # path("questions/<int:pk>/", api_views.QuestionDetailView.as_view(), name="question_detail"),
-    path("", include(router.urls)),
+    path("questions/", api_views.QuestionListCreateView.as_view(), name="question_list"),
+    path("questions/<int:pk>/", api_views.QuestionDetailView.as_view(), name="question_detail"),
 
 
     # Participants
