@@ -20,7 +20,7 @@ urlpatterns = [
     path("quiz/", api_views.QuizListCreateView.as_view(), name="quiz_list"),
     path("quiz/<int:pk>/", api_views.QuizDetailView.as_view(), name="quiz_detail"),
     # path("quiz/<int:pk>/start/", api_views.StartQuizView.as_view(), name="start_quiz"),
-    path("quiz/<int:quiz_id>/submit/", api_views.QuizSubmitView.as_view(), name="submit_quiz"),
+    path("quiz/<int:quiz_id>/submit/", api_views.QuizSubmissionView.as_view(), name="submit_quiz"),
 
 
     # Questions
