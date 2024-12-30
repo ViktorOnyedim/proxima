@@ -58,11 +58,56 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Choice
+        fields = "__all__"
+
+class QuestionSerializer(serializers.ModelSerializer):
+    choices = ChoiceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = [
+            "id",
+            "text",
+            "type",
+            "order",
+            "quiz",
+            "choices",
+        ]
+
+    def create(self, validated_data):
+        choices_data = validated_data.pop("choices", [])
+        question = Question.objects.create(**validated_data)
+        for choice_data in choices_data:
+            Choice.objects.create(question=question, **choice_data)
+        return question
+
+    def update(self, instance, validated_data):
+        choices_data = validated_data.pop("choices", [])
+        choices = instance.choices.all()
+        choices = list(choices)
+        instance.text = validated_data.get("text", instance.text)
+        instance.type = validated_data.get("type", instance.type)
+        instance.order = validated_data.get("order", instance.order)
+        instance.save()
+
+        for choice_data in choices_data:
+            choice = choices.pop(0)
+            choice.text = choice_data.get("text", choice.text)
+            choice.is_correct = choice_data.get("is_correct", choice.is_correct)
+            choice.save()
+
+        return instance
+
 class QuizSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Quiz
         fields = [
-            "title", "description", "time_limit", "quiz_creator", "created_at", "start_time", "is_active"
+            "id", "title", "description", "time_limit", "quiz_creator", "questions", "is_active"
         ]
 
 
@@ -72,16 +117,6 @@ class QuizCreatorSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class QuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Question
-        fields = "__all__"
-
-
-class ChoiceSeializer(serializers.ModelSerializer):
-    class Meta:
-        model = Choice
-        fields = "__all__"
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
