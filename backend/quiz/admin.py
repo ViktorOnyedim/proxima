@@ -10,7 +10,7 @@ class ChoiceInlineModel(admin.TabularInline):
     fields = ['text', 'is_correct']
 
 class QuestionAdmin(admin.ModelAdmin):
-    fields = ['text', 'type', 'quiz']
+    fields = ['quiz', 'text', 'type', 'order']
     list_display = ['text', 'type', 'order', 'quiz']
     inlines = [ChoiceInlineModel]
 
