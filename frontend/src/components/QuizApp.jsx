@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import {
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
   } from "@/components/ui/card";
@@ -10,15 +11,22 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import apiInstance from "@/utils/axios";
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Timer } from 'lucide-react';
 
 const QuizApp = () => {
     const [quiz, setQuiz] = useState([]);
+    const [timeLeft, setTimeLeft] = useState(null);
 
     const getQuiz = async () => {
         try {
             const response = await apiInstance.get('/quiz/1/');
             setQuiz(response.data);
             console.log(response.data)
+
+            // Set up timer
+            const [hours, mins, secs] = response.data.time_limit.split(":").map(Number);
+            const totalSeconds = hours * 3600 + mins * 60 + secs;
+            setTimeLeft(totalSeconds);
         } catch (error) {
             console.error(error);
         }
@@ -28,12 +36,43 @@ const QuizApp = () => {
         getQuiz();
     }, []);
 
+    useEffect(() => {
+        if (timeLeft === null || timeLeft <= 0) return;
+        const timer = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    // handleSubmit();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [timeLeft]);
+
+    const formatTime = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return [hours, mins, secs % 60]
+            .map(unit => unit.toString().padStart(2, '0'))
+            .join(':');
+        // return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
     return (
         <Card className="max-w-2xl mx-auto my-8">
             <CardHeader>
                 <CardTitle>{quiz.title}</CardTitle>
+                <CardDescription>{quiz.description}</CardDescription>
                 <div className="text-sm text-gray-500">
                     Time remaining (Limit): {quiz.time_limit}
+                </div>
+                <div className="flex items-center gap-2 text-lg font-semibold">
+                    <Timer className="w-5 h-5" />
+                    {formatTime(timeLeft)}
                 </div>
             </CardHeader>
             <CardContent>
