@@ -59,7 +59,6 @@ const QuizApp = () => {
         return [hours, mins, secs % 60]
             .map(unit => unit.toString().padStart(2, '0'))
             .join(':');
-        // return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
     return (
