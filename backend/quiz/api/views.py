@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.models import User
 from quiz.api.serializers import *
 from quiz.models import (
+    # CustomUser,
     Organization,
     Quiz,
     QuizCreator,
@@ -30,11 +31,12 @@ def api_root(request):
 # class UserDetail(generics.RetrieveAPIView):
 #     queryset = User.objects.all()
 #     serializer_class = UserSerializer
+
     
-# class RegisterView(generics.CreateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = RegisterSerializer
-#     permission_classes = [AllowAny]
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
 
 
 
@@ -95,17 +97,25 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     serializer_class = OrganizationSerializer
     permission_classes = [permissions.AllowAny]
 
-class OrganizationRegistrationView(generics.CreateAPIView):
-    serializer_class = OrganizationSerializer
-    permission_classes=[permissions.AllowAny]
+# class OrganizationRegistrationView(generics.CreateAPIView):
+#     serializer_class = OrganizationSerializer
+#     permission_classes=[permissions.AllowAny]
 
 class QuizListCreateView(generics.ListCreateAPIView):
     # queryset = Quiz.objects.all()
 
     serializer_class = QuizSerializer
+    # permission_classes = [IsQuizCreator]
     def get_queryset(self):
         quizzes_queryset = Quiz.objects.all()
         return quizzes_queryset
+        # if self.request.user.user_type == 'CREATOR':
+        #     return Quiz.objects.filter(quiz_creator__organization=self.request.user.organization)
+        # return Quiz.objects.none()
+    
+    # def perform_create(self, serializer):
+    #     quiz_creator = QuizCreator.objects.get(user=self.request.user)
+    #     serializer.save(quiz_creator=quiz_creator)
 
 class QuizDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Quiz.objects.all()
