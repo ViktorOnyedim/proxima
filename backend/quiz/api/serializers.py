@@ -12,6 +12,8 @@ from quiz.models import (
     ParticipantAnswer,
     QuizResult,
 )
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
