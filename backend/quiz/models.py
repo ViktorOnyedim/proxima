@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+# from django.contrib.auth.models import AbstractUser, BaseUserManager
 from datetime import timedelta
+from django.conf import settings
 
 QUESTION_TYPE = (
     ("SC", "single choice"),
@@ -92,7 +94,7 @@ class ParticipantAnswer(models.Model):
     
 
 class Participant(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
