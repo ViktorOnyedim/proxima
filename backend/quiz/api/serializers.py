@@ -12,15 +12,11 @@ from quiz.models import (
     ParticipantAnswer,
     QuizResult,
 )
-from django.contrib.auth import get_user_model
-User = get_user_model()
+# from django.contrib.auth import get_user_model
+# User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -30,11 +26,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "password", "password2", "email", "first_name", "last_name"]
-        extra_kwags = {
-            "first_name": {"required": True},
-            "last_name": {"required": True},
-        }
+        fields = ["username", "email", "password", "password2",]
+        # extra_kwags = {
+        #     "first_name": {"required": True},
+        #     "last_name": {"required": True},
+        # }
 
     def validate(self, attrs):
         if attrs["password"] != attrs["password2"]:
@@ -47,12 +43,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create(
             username=validated_data["username"],
             email=validated_data["email"],
-            first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"]
+            # first_name=validated_data["first_name"],
+            # last_name=validated_data["last_name"]
         )
         user.set_password(validated_data["password"])
         user.save()
         return User
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
