@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.models import User
@@ -38,6 +39,13 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
+
+class UserDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
 
 
 # class QuizTakingViewSet(viewsets.ModelViewSet):
@@ -105,6 +113,8 @@ class QuizListCreateView(generics.ListCreateAPIView):
     # queryset = Quiz.objects.all()
 
     serializer_class = QuizSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     # permission_classes = [IsQuizCreator]
     def get_queryset(self):
         quizzes_queryset = Quiz.objects.all()
@@ -220,11 +230,31 @@ class QuizResultListView(generics.ListAPIView):
     serializer_class = QuizResultSerializer
 
 
-class QuizResultDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = QuizResult.objects.all()
-    serializer_class = QuizResultSerializer
+class QuizResultDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    # queryset = QuizResult.objects.all()
+    # serializer_class = QuizResultSerializer
 
+    def get(self, request, pk, result_id):
+        try:
+            quiz_result = QuizResult.objects.get(
+                id=result_id,
+                quiz_id=pk,
+                participant_id=pk
+            )
 
+            return Response({
+                "id": quiz_result.id,
+                "score": quiz_result.score,
+                "created_at": quiz_result.created_at,
+                "quiz_title": quiz_result.quiz.title,
+                "participant": quiz_result.participant.user.username
+            })
+        except QuizResult.DoesNotExist:
+            return Response(
+                {"error": "Quiz Result not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 
 
